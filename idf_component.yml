@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: ElaadNL
+#
+# SPDX-License-Identifier: Apache-2.0
+
+version: "1.0.0"
+name: s2-device-firmware
+description: S2 library for ESP-IDF
+dependencies:
+  espressif/esp_websocket_client: "^1.6.1"
+  espressif/cjson: "^1.7.18"
+  espressif/mdns: "*"

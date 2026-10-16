@@ -1,0 +1,10 @@
+// SPDX-FileCopyrightText: ElaadNL
+//
+// SPDX-License-Identifier: Apache-2.0
+
+#pragma once
+
+#define WIFI_SSID "@EXAMPLE_WIFI_SSID@"
+#define WIFI_PASSWORD "@EXAMPLE_WIFI_PASSWORD@"
+#define CEM_S2_INTEGRATION_URL "@EXAMPLE_CEM_S2_INTEGRATION_URL@"
+#define PAIRING_ACCESS_TOKEN "@EXAMPLE_PAIRING_ACCESS_TOKEN@"

@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: ElaadNL
+#
+# SPDX-License-Identifier: Apache-2.0
+
+dependencies:
+  espressif/esp_websocket_client: "^1.6.1"
+  espressif/cjson:
+    override_path: "../mocks/cjson"
+  espressif/mdns:
+    override_path: "../mocks/mdns"
+  espressif/nvs_flash:
+    override_path: "../mocks/nvs_flash"

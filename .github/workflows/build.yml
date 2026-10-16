@@ -1,0 +1,39 @@
+# SPDX-FileCopyrightText: ElaadNL
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: ESP-IDF Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build ESP-IDF Project
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Cache IDF build artifacts
+        id: cache-build
+        uses: actions/cache@v5
+        with:
+          path: |
+            build
+            dependencies.lock
+            sdkconfig
+          key: ${{ runner.os }}-cmake-idf-cache
+
+      - name: esp-idf build
+        uses: espressif/esp-idf-ci-action@e6f5c74232b1ccd4c97ed641f1e48553853f1fd5 # v1.2.0
+        with:
+          esp_idf_version: ${{ vars.IDF_VERSION }}
+          target: esp32
+          path: examples/basic
+          command: idf.py build

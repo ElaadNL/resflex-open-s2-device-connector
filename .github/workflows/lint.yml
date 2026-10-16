@@ -1,0 +1,32 @@
+# SPDX-FileCopyrightText: ElaadNL
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: Linting check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    name: Lint with esp-clang
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: esp-idf lint
+        uses: espressif/esp-idf-ci-action@e6f5c74232b1ccd4c97ed641f1e48553853f1fd5 # v1.2.0
+        with:
+          esp_idf_version: ${{ vars.IDF_VERSION }}
+          target: esp32
+          path: examples/basic
+          command: >-
+            idf_tools.py install esp-clang > /dev/null &&
+            source $IDF_PATH/export.sh &&
+            idf.py clang-check

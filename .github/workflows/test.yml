@@ -1,0 +1,72 @@
+# SPDX-FileCopyrightText: ElaadNL
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: Tests and SonarQube Analysis
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Test and Coverage
+    runs-on: ubuntu-latest
+    container:
+      image: espressif/idf:v5.5.5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Run tests
+        shell: bash
+        run: |
+          cd test
+          source /opt/esp/idf/export.sh
+          idf.py -DIDF_TARGET=linux -DENABLE_COVERAGE=ON build
+          ./build/s2_tests.elf
+          pip install gcovr --quiet
+          python3 -m gcovr --sonarqube ../coverage.xml --filter ../src --root .. ./build --print-summary
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
+
+  sonarqube:
+    name: SonarQube Analysis
+    needs: test
+    runs-on: ubuntu-latest
+    if: |
+      vars.SONAR_ENABLED == 'true' &&
+      (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main'))
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Download coverage artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: coverage-report
+          path: .
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v7.0.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_USER_HOME: ${{ github.workspace }}/.sonar
+          SONAR_QUALITYGATE_WAIT: "true"
+        with:
+          args: >
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT }} \
+            -Dsonar.coverage.reportPaths=coverage.xml \
+            -Dsonar.sources=src
